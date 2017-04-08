@@ -1,0 +1,17 @@
+{
+  "name": "MachineLearning/Regression",
+  "description": "Linear regression",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dave Barnwell",
+      "email": "dave.barnwell@freshsauce.co.uk"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "MachineLearning\\": "src/"
+    }
+  }
+}
