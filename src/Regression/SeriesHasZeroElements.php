@@ -5,7 +5,7 @@ namespace MachineLearning\Regression;
 
 use Throwable;
 
-class ParameterNotComputedYet extends \Exception
+class SeriesHasZeroElements extends \Exception
 {
 
     public function __construct($message = "", $code = 0, Throwable $previous = null)

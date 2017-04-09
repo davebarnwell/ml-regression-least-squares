@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: dave
- * Date: 07/04/2017
- * Time: 14:28
- */
 
 namespace MachineLearning\Regression;
 

@@ -78,6 +78,10 @@ class LeastSquares
         $this->compute();
     }
 
+    /**
+     * @param array $xCoords
+     * @param array $yCoords
+     */
     private function appendData(array $xCoords, array $yCoords)
     {
         $this->xCoords = array_merge($this->xCoords, $xCoords);
@@ -135,11 +139,18 @@ class LeastSquares
         return $this->returnOrThrowIfNull($this->intercept);
     }
 
+    /**
+     * @return array
+     */
     public function getSlopeAndIntercept(): array
     {
         return array("slope" => $this->slope, "intercept" => $this->intercept);
     }
 
+    /**
+     * @return int
+     * @throws SeriesCountMismatch
+     */
     private function countCoordinates(): int
     {
         // calculate number points
@@ -149,6 +160,9 @@ class LeastSquares
         // ensure both arrays of points are the same size
         if ($this->coordinateCount != $yCount) {
             throw new SeriesCountMismatch("Number of elements in arrays do not match {$this->xCoords}:{$yCount}");
+        }
+        if ($this->coordinateCount === 0) {
+            throw new SeriesHasZeroElements('Series has zero elements');
         }
         return $this->coordinateCount;
     }
