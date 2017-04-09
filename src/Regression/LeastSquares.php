@@ -29,6 +29,20 @@ class LeastSquares
     private $yCoords = [];
 
     /**
+     * Holds the y differences from the calcuated regression line
+     *
+     * @var float[]
+     */
+    private $yDifferences = [];
+
+
+    /**
+     * Holds the cumulative sum of yDifferences
+     *
+     * @var float[]
+     */
+    private $cumulativeSum = [];
+    /**
      * @var float
      */
     private $slope;
@@ -76,8 +90,10 @@ class LeastSquares
      */
     private function resetCalculatedValues()
     {
-        $this->slope     = null;
-        $this->intercept = null;
+        $this->slope         = null;
+        $this->intercept     = null;
+        $this->yDifferences  = [];
+        $this->cumulativeSum = [];
     }
 
     /**
@@ -177,4 +193,79 @@ class LeastSquares
 
     }
 
+    /**
+     * predict for a given y value (sample) the x value (target)
+     *
+     * @param float $y
+     *
+     * @return float
+     */
+    public function predictX(float $y): float
+    {
+        return ($y - $this->getIntercept()) / $this->getSlope();
+    }
+
+    /**
+     * predict for a given x value (target) the y value (sample)
+     *
+     * @param float $x
+     *
+     * @return float
+     */
+    public function predictY(float $x): float
+    {
+        return $this->getIntercept() + ($x * $this->getSlope());
+    }
+
+    /**
+     * Get the differences of the actual data from the regression line
+     * This is the differences in y values
+     *
+     * @return \float[]
+     */
+    public function getDifferencesFromRegressionLine()
+    {
+        if (0 === count($this->yDifferences)) {
+            for ($i = 0; $i < $this->coordinateCount; $i++) {
+                $this->yDifferences[] = $this->yCoords[$i] - $this->predictY($this->xCoords[$i]);
+            }
+        }
+        return $this->yDifferences;
+    }
+
+    /**
+     * Get the cumulative some of the differences from the regression line
+     *
+     * @return float[]
+     */
+    public function getCumulativeSumOfDifferencesFromRegressionLine()
+    {
+        if (0 === count($this->cumulativeSum)) {
+            $differences   = $this->getDifferencesFromRegressionLine();
+            $this->cumulativeSum = [$differences[0]];
+            for ($i = 1; $i < $this->coordinateCount; $i++) {
+                $this->cumulativeSum[$i] = $differences[$i] + $this->cumulativeSum[$i - 1];
+            }
+        }
+        return $this->cumulativeSum;
+    }
+
+
+    /**
+     * return an array of Points corresponding to the regression line of the current data
+     *
+     * @return Point[]
+     */
+    public function getRegressionLinePoints() {
+        $minX = min($this->xCoords);
+        $maxX = max($this->xCoords);
+        $xStepSize = (($maxX - $minX) / ($this->coordinateCount-1));
+        $xy = [];
+        for($i=0;$i<$this->coordinateCount;$i++) {
+            $x = $minX + ($i*$xStepSize);
+            $y = $this->predictY($x);
+            $xy[] = new Point($x,$y); // add point
+        }
+        return $xy;
+    }
 }

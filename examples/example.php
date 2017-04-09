@@ -14,7 +14,7 @@ $y = [];
 
 
 // Get data from CSV
-$fd = fopen(__DIR__ . '/data/Falck_Nykobing_E_-_HDD.csv', 'r');
+$fd = fopen(__DIR__ . '/data/data.csv', 'r');
 
 // column indexes in the CSV start from zero
 $ENERGY_IDX     = 2;      // col 2 = first column with energy data
@@ -44,5 +44,17 @@ $linearRegression = new \MachineLearning\Regression\LeastSquares();
 $linearRegression->train($x, $y); // targets, samples
 $results = $linearRegression->getSlopeAndIntercept();
 
-var_dump($results); // Dump slope and intercept out
+// var_dump($results); // Dump slope and intercept out
 // You can validate against slope and intercept functions in Excel, google docs etc
+
+$differences = $linearRegression->getDifferencesFromRegressionLine();
+
+$cumulativeSum = $linearRegression->getCumulativeSumOfDifferencesFromRegressionLine();
+
+$regressionLine = $linearRegression->getRegressionLinePoints();
+
+echo implode(',', ['degreeDay-x','energy-y','rX','rY','yDiff','cumSumyDiff']).PHP_EOL;
+foreach($x as $i => $v) {
+    $row = [$v,$y[$i],$regressionLine[$i]->getX(),$regressionLine[$i]->getY(),$differences[$i],$cumulativeSum[$i]];
+    echo implode(',', $row).PHP_EOL;
+}

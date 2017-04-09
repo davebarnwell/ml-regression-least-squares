@@ -8,7 +8,7 @@ you'd include with composer.
 
 The example usage can be run using the following:-
 
-    cd tests
+    cd examples
     php example.php
     
     
