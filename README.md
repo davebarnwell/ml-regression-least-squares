@@ -24,8 +24,12 @@ Usage:-
     // return array of cumulative sum of the differences of y values from the regression line
     $cumulativeSum = $linearRegression->getCumulativeSumOfDifferencesFromRegressionLine();
     
-    // return x,y values of the regression line for current data
+    // return array of Point objects giving the x,y values of the regression line
+    // for current data
     $regressionLine = $linearRegression->getRegressionLinePoints();
+    
+    $regressionLine[0]->getX();
+    $regressionLine[0]->getY();
 
     echo $linearRegression->predictX($anObservationValue).PHP_EOL; // predict X
 
