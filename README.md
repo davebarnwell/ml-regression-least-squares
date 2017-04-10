@@ -6,7 +6,33 @@ with some example test data to run it against. The class is called \MachineLearn
 The example uses composer to generate the class auto loader even though there are no dependencies, as in a larger project
 you'd include with composer.
 
-The example usage can be run using the following:-
+Usage:-
+
+    $x = [...]; // target values
+    $y = [...]; // observation values
+
+    $linearRegression = new \MachineLearning\Regression\LeastSquares();
+    
+    $linearRegression->train($x, $y); // train on targets, samples
+
+    echo "Slope: ".$linearRegression->getSlope().PHP_EOL; // show the slope
+    echo "Intercept: ".$linearRegression->getIntercept().PHP_EOL; // show the intercept
+        
+    // return array of differences of y values from the regression line
+    $differences = $linearRegression->getDifferencesFromRegressionLine();
+    
+    // return array of cumulative sum of the differences of y values from the regression line
+    $cumulativeSum = $linearRegression->getCumulativeSumOfDifferencesFromRegressionLine();
+    
+    // return x,y values of the regression line for current data
+    $regressionLine = $linearRegression->getRegressionLinePoints();
+
+    echo $linearRegression->predictX($anObservationValue).PHP_EOL; // predict X
+
+    echo $linearRegression->predictY($aTargetValue).PHP_EOL; // predict Y
+
+
+A coded example can be run using the following, Note it relies on the classes being auto loaded via composer:-
 
     cd examples
     php example.php
