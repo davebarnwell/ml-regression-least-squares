@@ -53,6 +53,8 @@ $cumulativeSum = $linearRegression->getCumulativeSumOfDifferencesFromRegressionL
 
 $regressionLine = $linearRegression->getRegressionLinePoints();
 
+echo $linearRegression->getRSquared().PHP_EOL; die;
+
 echo implode(',', ['degreeDay-x','energy-y','rX','rY','yDiff','cumSumyDiff']).PHP_EOL;
 foreach($x as $i => $v) {
     $row = [$v,$y[$i],$regressionLine[$i]->getX(),$regressionLine[$i]->getY(),$differences[$i],$cumulativeSum[$i]];

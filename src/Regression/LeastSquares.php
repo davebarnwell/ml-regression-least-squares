@@ -264,6 +264,63 @@ class LeastSquares
         return $this->cumulativeSum;
     }
 
+    /**
+     * Mean of Y values
+     *
+     * @return float|int
+     */
+    public function getMeanY() {
+        $sum = 0;
+        foreach($this->yCoords as $y) {
+            $sum += $y;
+        }
+        return $sum / $this->coordinateCount;
+    }
+
+    /**
+     * SSR is the "regression sum of squares" and quantifies how far the estimated sloped regression line,
+     * is from the horizontal "no relationship line" (mean)
+     *
+     * @return float|int
+     */
+    public function getRegressionSumOfSquares() {
+        $regressionLine = $this->getRegressionLinePoints();
+        $sum = 0;
+        $yMean = $this->getMeanY();
+        foreach($regressionLine as $i => $p) {
+            $yDifferenceFromMean = $p->getY() - $yMean;
+            $sum += $yDifferenceFromMean * $yDifferenceFromMean; // difference from average y squared
+        }
+        return $sum;
+    }
+
+    /**
+     * SSTO is the "total sum of squares" and quantifies how much the data points, vary around their mean
+     *
+     * @return float|int
+     */
+    public function getTotalSumOfSquares() {
+        $sum = 0;
+        $yMean = $this->getMeanY();
+        foreach($this->yCoords as $i => $y) {
+            $yDifferenceFromMean = $y - $yMean;
+            $sum += $yDifferenceFromMean * $yDifferenceFromMean; // difference from average y squared
+        }
+        return $sum;
+    }
+
+    /**
+     * The "coefficient of determination" or "r-squared value"
+     * always a number between 0 and 1
+     * 1, all of the data points fall perfectly on the regression line. The predictor x accounts for all of the variation in y
+     * 0, the estimated regression line is perfectly horizontal. The predictor x accounts for none of the variation in y
+     *
+     * @return float
+     */
+    public function getRSquared() {
+        return $this->getRegressionSumOfSquares() / $this->getTotalSumOfSquares();
+    }
+
 
     /**
      * return an array of Points corresponding to the regression line of the current data

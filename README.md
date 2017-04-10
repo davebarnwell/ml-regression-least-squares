@@ -34,6 +34,8 @@ Usage:-
     echo $linearRegression->predictX($anObservationValue).PHP_EOL; // predict X
 
     echo $linearRegression->predictY($aTargetValue).PHP_EOL; // predict Y
+    
+    echo $linearRegression->getRSquared().PHP_EOL; // Regression fit; 1 = perfect fit 0 = no fit
 
 
 A coded example can be run using the following, Note it relies on the classes being auto loaded via composer:-
