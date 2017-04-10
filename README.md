@@ -1,4 +1,4 @@
-# Linear Regression class
+# Least Squares Linear Regression class
 
 A Linear regression class that uses the least squares method to approximate a straight line to a data set
 with some example test data to run it against. The class is called \MachineLearning\Regression\LeastSquares.
