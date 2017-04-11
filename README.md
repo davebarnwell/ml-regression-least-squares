@@ -1,10 +1,15 @@
-# Least Squares Linear Regression class
+# Least Squares Linear Regression class ![Travis CI](https://travis-ci.org/davebarnwell/ml-regression-least-squares.svg?branch=master)
 
 A Linear regression class that uses the least squares method to approximate a straight line to a data set
 with some example test data to run it against. The class is called \MachineLearning\Regression\LeastSquares.
 
+Code is written with PHP 7.* syntax ie. uses return type hinting and scalar type hinting for parameters,
+if you need PHP 5.6 or lower support just remove the scalar hinting and return type hinting.
+
+
 The example uses composer to generate the class auto loader even though there are no dependencies, as in a larger project
 you'd include with composer.
+
 
 Usage:-
 
