@@ -2,14 +2,5 @@ language: php
 php:
   - '7.0'
   - '7.1'
-  - hhvm
 install:
   - composer install
-script:
-  - |
-    if [[ $TRAVIS_PHP_VERSION = "hhv"* ]]; then
-      hhvm -vEval.EnableHipHopSyntax=true ./bin/phpunit --coverage-clover=build/logs/clover.xml
-    else
-      ./bin/phpunit --coverage-clover=build/logs/clover.xml
-    fi
-  -
