@@ -86,7 +86,7 @@ class LeastSquaresTest extends TestCase
                 ], // Cumulative Sum of diffs
                 21974.1227,  // slope
                 446848.3469,  // intercept
-                0.0514529, // R Squared
+                0.0240439, // R Squared
             ]
         ];
     }

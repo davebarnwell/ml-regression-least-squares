@@ -29,7 +29,7 @@ class LeastSquares
     private $yCoords = [];
 
     /**
-     * Holds the y differences from the calcuated regression line
+     * Holds the y differences from the calculated regression line
      *
      * @var float[]
      */
@@ -42,19 +42,33 @@ class LeastSquares
      * @var float[]
      */
     private $cumulativeSum = [];
+
     /**
      * @var float
      */
     private $slope;
+
     /**
      * @var float
      */
     private $intercept;
 
     /**
+     * @var float
+     */
+    private $rSquared;
+
+    /**
      * @var int
      */
     private $coordinateCount = 0;
+
+    /**
+     * regression line points
+     *
+     * @var Point[]
+     */
+    private $xy = [];
 
     /**
      * LinearRegression constructor.
@@ -96,8 +110,10 @@ class LeastSquares
     {
         $this->slope         = null;
         $this->intercept     = null;
+        $this->rSquared      = null;
         $this->yDifferences  = [];
         $this->cumulativeSum = [];
+        $this->xy            = [];
     }
 
     /**
@@ -140,16 +156,24 @@ class LeastSquares
     }
 
     /**
-     * @return array
+     * The "coefficient of determination" or "r-squared value"
+     * always a number between 0 and 1
+     * 1, all of the data points fall perfectly on the regression line. The predictor x accounts for all of the
+     * variation in y
+     * 0, the estimated regression line is perfectly horizontal. The predictor x accounts for none of the variation in
+     * y
+     *
+     * @return float
      */
-    public function getSlopeAndIntercept(): array
+    public function getRSquared()
     {
-        return array("slope" => $this->slope, "intercept" => $this->intercept);
+        return $this->returnOrThrowIfNull($this->rSquared);
     }
 
     /**
      * @return int
      * @throws SeriesCountMismatch
+     * @throws SeriesHasZeroElements
      */
     private function countCoordinates(): int
     {
@@ -193,10 +217,12 @@ class LeastSquares
 
         $xx_sum = 0;
         $xy_sum = 0;
+        $yy_sum = 0;
 
         for ($i = 0; $i < $this->coordinateCount; $i++) {
             $xy_sum += ($this->xCoords[$i] * $this->yCoords[$i]);
             $xx_sum += ($this->xCoords[$i] * $this->xCoords[$i]);
+            $yy_sum += ($this->yCoords[$i] * $this->yCoords[$i]);
         }
 
         // calculate slope
@@ -204,6 +230,11 @@ class LeastSquares
 
         // calculate intercept
         $this->intercept = ($y_sum - ($this->slope * $x_sum)) / $this->coordinateCount;
+
+        // Calculate R squared
+        // Math.pow((n*sum_xy - sum_x*sum_y)/Math.sqrt((n*sum_xx-sum_x*sum_x)*(n*sum_yy-sum_y*sum_y)),2);
+        $this->rSquared = POW(($this->coordinateCount * $xy_sum - $x_sum * $y_sum) / sqrt(($this->coordinateCount * $xx_sum - $x_sum * $x_sum) * ($this->coordinateCount * $yy_sum - $y_sum * $y_sum)),
+            2);
 
     }
 
@@ -255,7 +286,7 @@ class LeastSquares
     public function getCumulativeSumOfDifferencesFromRegressionLine()
     {
         if (0 === count($this->cumulativeSum)) {
-            $differences   = $this->getDifferencesFromRegressionLine();
+            $differences         = $this->getDifferencesFromRegressionLine();
             $this->cumulativeSum = [$differences[0]];
             for ($i = 1; $i < $this->coordinateCount; $i++) {
                 $this->cumulativeSum[$i] = $differences[$i] + $this->cumulativeSum[$i - 1];
@@ -269,74 +300,29 @@ class LeastSquares
      *
      * @return float|int
      */
-    public function getMeanY() {
-        $sum = 0;
-        foreach($this->yCoords as $y) {
-            $sum += $y;
-        }
-        return $sum / $this->coordinateCount;
+    public function getMeanY()
+    {
+        return array_sum($this->yCoords) / $this->coordinateCount;
     }
-
-    /**
-     * SSR is the "regression sum of squares" and quantifies how far the estimated sloped regression line,
-     * is from the horizontal "no relationship line" (mean)
-     *
-     * @return float|int
-     */
-    public function getRegressionSumOfSquares() {
-        $regressionLine = $this->getRegressionLinePoints();
-        $sum = 0;
-        $yMean = $this->getMeanY();
-        foreach($regressionLine as $i => $p) {
-            $yDifferenceFromMean = $p->getY() - $yMean;
-            $sum += $yDifferenceFromMean * $yDifferenceFromMean; // difference from average y squared
-        }
-        return $sum;
-    }
-
-    /**
-     * SSTO is the "total sum of squares" and quantifies how much the data points, vary around their mean
-     *
-     * @return float|int
-     */
-    public function getTotalSumOfSquares() {
-        $sum = 0;
-        $yMean = $this->getMeanY();
-        foreach($this->yCoords as $i => $y) {
-            $yDifferenceFromMean = $y - $yMean;
-            $sum += $yDifferenceFromMean * $yDifferenceFromMean; // difference from average y squared
-        }
-        return $sum;
-    }
-
-    /**
-     * The "coefficient of determination" or "r-squared value"
-     * always a number between 0 and 1
-     * 1, all of the data points fall perfectly on the regression line. The predictor x accounts for all of the variation in y
-     * 0, the estimated regression line is perfectly horizontal. The predictor x accounts for none of the variation in y
-     *
-     * @return float
-     */
-    public function getRSquared() {
-        return $this->getRegressionSumOfSquares() / $this->getTotalSumOfSquares();
-    }
-
 
     /**
      * return an array of Points corresponding to the regression line of the current data
      *
      * @return Point[]
      */
-    public function getRegressionLinePoints() {
-        $minX = min($this->xCoords);
-        $maxX = max($this->xCoords);
-        $xStepSize = (($maxX - $minX) / ($this->coordinateCount-1));
-        $xy = [];
-        for($i=0;$i<$this->coordinateCount;$i++) {
-            $x = $minX + ($i*$xStepSize);
-            $y = $this->predictY($x);
-            $xy[] = new Point($x,$y); // add point
+    public function getRegressionLinePoints()
+    {
+        if (0 == count($this->xy)) {
+            $minX      = min($this->xCoords);
+            $maxX      = max($this->xCoords);
+            $xStepSize = (($maxX - $minX) / ($this->coordinateCount - 1));
+            $this->xy  = [];
+            for ($i = 0; $i < $this->coordinateCount; $i++) {
+                $x          = $minX + ($i * $xStepSize);
+                $y          = $this->predictY($x);
+                $this->xy[] = new Point($x, $y); // add point
+            }
         }
-        return $xy;
+        return $this->xy;
     }
 }

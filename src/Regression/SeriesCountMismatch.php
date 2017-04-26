@@ -9,7 +9,7 @@ class SeriesCountMismatch extends \Exception
 {
 
     /**
-     * LinearRegressionParamsException constructor.
+     * SeriesCountMismatch constructor.
      * @param string $message
      * @param int $code
      * @param Throwable|null $previous

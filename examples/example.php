@@ -41,10 +41,12 @@ fclose($fd);
 
 $linearRegression = new \MachineLearning\Regression\LeastSquares();
 
-$linearRegression->train($x, $y); // targets, samples
-$results = $linearRegression->getSlopeAndIntercept();
+$linearRegression->train($x, $y); // targets, samples, subsequent calls with new x[], y[] adds to the existing data and refines the regression line
 
-// var_dump($results); // Dump slope and intercept out
+
+echo 'Intercept,' . $linearRegression->getIntercept() . PHP_EOL;
+echo 'Slope,' . $linearRegression->getSlope() . PHP_EOL;
+
 // You can validate against slope and intercept functions in Excel, google docs etc
 
 $differences = $linearRegression->getDifferencesFromRegressionLine();
